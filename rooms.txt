@@ -1,0 +1,48 @@
+The Food Court
+1
+medium-sized mall food court with the usual fast food places. You can try to move from area to area using the 4 cardinal directions north, south, east, and west. Exit to quit the game.
+4
+3
+0
+2
+false
+Zumiez
+2
+clothing store that has lots of clothes and skateboard equipment.
+0
+1
+0
+0
+false
+H&M
+3
+large store full of modern/trendy clothes and mannequins that do not resemble human beings at all.
+0
+0
+0
+2
+false
+THE APPLE STORE
+4
+store that has a giant sign that looks like an apple with a bite taken out of it above the entrance and is filled with high-tech gadgets and accessories.
+0
+6
+1
+5
+false
+A Bathroom
+5
+normal mall bathroom with lines of sinks that have dirty mirrors above them, stalls, and those hand air blowers that never fully are able to dry your hands.
+0
+4
+0
+0
+false
+Foot Locker
+6
+store full of shoes and all things necessary to be considered an "athlete".
+0
+0
+0
+4
+false
