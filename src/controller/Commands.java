@@ -175,7 +175,12 @@ class Commands {
     private String itemCommand(String cmd) throws GameException {
         char itemCmd = Character.toUpperCase(cmd.charAt(0)); // Get the item command character
         String[] cmdLines = cmd.split(" ", 2);
-        String itemName = cmdLines[1]; //grabs Item name
+        String itemName = null;
+        try {
+            itemName = cmdLines[1]; //grabs Item name
+        } catch (ArrayIndexOutOfBoundsException e) {
+            throw new GameException("Please specify item name");
+        }
 
         return switch (itemCmd) {
             case 'G' -> get(itemName);

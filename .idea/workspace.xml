@@ -4,21 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6e8dc0cb-12d5-4460-a48d-85c5d6b73336" name="Changes" comment="Packages and txt files added">
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+    <list default="true" id="6e8dc0cb-12d5-4460-a48d-85c5d6b73336" name="Changes" comment="Project has been successfully revised.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/items.txt" beforeDir="false" afterPath="$PROJECT_DIR$/items.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rooms.txt" beforeDir="false" afterPath="$PROJECT_DIR$/rooms.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/controller/Commands.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/controller/Commands.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/controller/Exit.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/controller/Exit.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/controller/Game.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/controller/GameController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/controller/GameController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/controller/Item.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/controller/Item.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/controller/Player.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/controller/Player.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/controller/Room.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/controller/Room.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/model/ItemDB.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/model/ItemDB.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/model/RoomDB.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/model/RoomDB.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/view/Adventure.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/view/Adventure.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -37,6 +25,9 @@
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
   </component>
   <component name="ProjectId" id="2RCvdE3UZrJUPYM5I0XR7rYqxxd" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
@@ -117,7 +108,7 @@
       <workItem from="1687327210146" duration="33042000" />
       <workItem from="1688176006708" duration="4139000" />
       <workItem from="1688579722718" duration="628000" />
-      <workItem from="1688611628736" duration="27340000" />
+      <workItem from="1688611628736" duration="30265000" />
     </task>
     <task id="LOCAL-00001" summary="TEST 1">
       <created>1686767091746</created>
@@ -149,7 +140,15 @@
       <option name="project" value="LOCAL" />
       <updated>1687404960501</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Project has been successfully revised.">
+      <option name="closed" value="true" />
+      <created>1688699574780</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1688699574780</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -169,6 +168,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="TEST 1" />
     <MESSAGE value="Packages and txt files added" />
-    <option name="LAST_COMMIT_MESSAGE" value="Packages and txt files added" />
+    <MESSAGE value="Project has been successfully revised." />
+    <option name="LAST_COMMIT_MESSAGE" value="Project has been successfully revised." />
   </component>
 </project>
