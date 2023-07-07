@@ -72,18 +72,10 @@ class Player {
      */
     protected String printInventory() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Inventory:\n");
+        sb.append("Inventory:");
         for (Item item : inventory) {
-            sb.append("- ").append(item.getItemName()).append("\n");
+            sb.append("\n").append("- ").append(item.getItemName());
         }
         return sb.toString();
     }
-
-    Item getCurrentItem() {
-        if (inventory.isEmpty()) {
-            return null;
-        }
-        return inventory.get(inventory.size() - 1);
-    }
-
 }

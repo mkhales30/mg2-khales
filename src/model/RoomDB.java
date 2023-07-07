@@ -1,12 +1,12 @@
 package model;
 
+import controller.Exit;
 import controller.Room;
 import gameExceptions.GameException;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Scanner;
 
 /**
@@ -15,12 +15,12 @@ import java.util.Scanner;
  * @version 1.2
  * Course: ITEC 3860 Spring 2023
  * Written: February 18, 2023
- * This class holds the Room data for mini game 2. Contains an ArrayList of Room objects.
+ * This class holds the Room data for mini-game 2. Contains an ArrayList of Room objects.
  * This reads information from ItemDB when retrieving a Room.
  * This allows other classes to request these items.
  */
 public class RoomDB {
-    private ArrayList<Room> roomArray = new ArrayList<>();
+    private final ArrayList<Room> roomArray = new ArrayList<>();
     private static RoomDB instance;
 
     /**
@@ -57,38 +57,70 @@ public class RoomDB {
      * Throws an exception if the text file is not found.
      */
     public void readRooms() throws GameException {
-        Scanner in = null;
+        try{
+        Scanner in;
         try {
             in = new Scanner(new File("rooms.txt"));
         } catch (FileNotFoundException e) {
             throw new GameException("File not found");
         }
 
-        while (in.hasNext()) {
-            String name = in.nextLine();
-            int id = Integer.parseInt(in.nextLine());
-            String desc = in.nextLine();
-            int north = Integer.parseInt(in.nextLine());
-            int east = Integer.parseInt(in.nextLine());
-            int south = Integer.parseInt(in.nextLine());
-            int west = Integer.parseInt(in.nextLine());
-            boolean visited = Boolean.parseBoolean(in.nextLine());
+        String separator = "----";
 
-            Room room = new Room();
-            room.setRoomID(id);
-            room.setName(name);
-            room.setDescription(desc);
-            room.setVisited(visited);
-            room.setNorth(north);
-            room.setEast(east);
-            room.setSouth(south);
-            room.setWest(west);
+        // Adding data scanned to arraylist
+        while (in.hasNextLine()){
+            int roomID = Integer.parseInt(in.nextLine()); //ID
+            String name = in.nextLine(); //name
 
-            // Add the room to the collection
-            roomArray.add(room);
+            // Scanning room description
+            StringBuilder stringBuilder = new StringBuilder();
+            while (in.hasNextLine()) {
+                String line = in.nextLine();
+                if (line.equals(separator)) {
+                    break;
+                }
+                stringBuilder.append(line).append("\n");
+            }
+            String description = stringBuilder.toString(); //description
+
+            // Scanning room exits
+            ArrayList<Exit> exits = new ArrayList<>();
+            String exitDirection;
+            int exitNumber;
+
+            while (in.hasNextLine()) {
+                String line = in.next();
+                if (line.equals(separator)) {
+                    break;
+                }
+                exitDirection = line;
+                exitNumber = in.nextInt();
+                exits.add(new Exit(exitDirection, exitNumber));
+            }
+
+            ArrayList<Integer> itemsID = new ArrayList<>();
+            while (in.hasNextLine()) {
+                String line = in.next();
+                if (line.equals(separator)) {
+                    break;
+                }
+
+                int id = Integer.parseInt(line);
+                itemsID.add(id);
+
+            }
+
+            Room newRoom = new Room(roomID, name, description, exits, itemsID); //creates and populates new room
+            roomArray.add(newRoom);
+
+            if(in.hasNextLine()){
+                in.nextLine();
+            }
         }
-
         in.close();
+        } catch (GameException e) {
+            throw new GameException(e.getMessage());
+        }
     }
 
     public ArrayList<Room> getRoomArray() {
@@ -105,14 +137,11 @@ public class RoomDB {
      * @throws GameException if the roomID cannot be found.
      */
     public Room getRoom(int roomID) throws GameException {
-        //TESTING
-//		for (Room roomList : rooms) {
-//			for (Room room : roomList) {
-//				if (room.getRoomID() == roomID) {
-//					return room;
-//				}
-//			}
-//		}
+        for (Room room: roomArray) {
+            if (room.getRoomID() == roomID) {
+                return room;
+            }
+        }
         throw new GameException("Room not found with ID: " + roomID);
     }
 
@@ -125,10 +154,10 @@ public class RoomDB {
      * @return ArrayList - the items contained in a room.
      * @throws GameException if the roomID cannot be found.
      */
-    public ArrayList<Integer> getItems(int roomID) throws GameException {
-        Room room = getRoom(roomID);
-        return room.getItems();
-    }
+//    public ArrayList<Integer> getItems(int roomID) throws GameException {
+//        Room room = getRoom(roomID);
+//        return room.getItems();
+//    }
 
     /**
      * Method getMap
@@ -140,15 +169,5 @@ public class RoomDB {
         throw new GameException("Method not implemented yet.");
     }
 
-    /**
-     * Method updateRoom
-     * Updates the room in the current map.
-     * Throws an exception if the room is not found.
-     *
-     * @param rm - The Room that is being updated.
-     */
-    public void updateRoom(Room rm) throws GameException {
-        throw new GameException("Method not implemented yet.");
-    }
 }
 

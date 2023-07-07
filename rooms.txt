@@ -1,48 +1,69 @@
+0
 The Food Court
-1
 medium-sized mall food court with the usual fast food places. You can try to move from area to area using the 4 cardinal directions north, south, east, and west. Exit to quit the game.
-4
-3
-0
-2
-false
+----
+NORTH 3
+EAST 2
+WEST 1
+----
+1
+----
+1
 Zumiez
-2
 clothing store that has lots of clothes and skateboard equipment.
-0
-1
-0
-0
-false
-H&M
-3
-large store full of modern/trendy clothes and mannequins that do not resemble human beings at all.
-0
-0
-0
+----
+NORTH 5
+EAST 0
+----
 2
-false
+----
+2
+H&M
+large store full of modern/trendy clothes and mannequins that do not resemble human beings at all.
+----
+EAST 6
+WEST 0
+----
+4
+----
+3
 THE APPLE STORE
-4
 store that has a giant sign that looks like an apple with a bite taken out of it above the entrance and is filled with high-tech gadgets and accessories.
-0
-6
-1
-5
-false
+----
+EAST 4
+SOUTH 0
+WEST 5
+----
+3
+----
+4
 A Bathroom
-5
 normal mall bathroom with lines of sinks that have dirty mirrors above them, stalls, and those hand air blowers that never fully are able to dry your hands.
-0
-4
-0
-0
-false
+----
+SOUTH 7
+WEST 3
+----
+----
+5
 Foot Locker
-6
 store full of shoes and all things necessary to be considered an "athlete".
-0
-0
-0
-4
-false
+----
+EAST 3
+SOUTH 1
+----
+----
+6
+Regal Cinema
+a multiplex cinema with multiple screens showing the latest movies. You can smell the popcorn as soon as you enter the area.
+----
+WEST 2
+----
+5
+----
+7
+Barnes & Nobles
+a spacious bookstore with shelves filled with books of various genres, including bestsellers, classics, and children's books. There's a cozy reading area with comfortable chairs.
+----
+NORTH 4
+----
+----

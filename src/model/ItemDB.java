@@ -21,7 +21,7 @@ import java.util.Scanner;
  */
 public class ItemDB {
 
-    private Collection<Item> items;
+    private final Collection<Item> items;
     public static ItemDB instance;
 
     /**
@@ -49,8 +49,7 @@ public class ItemDB {
      * This is private to implement the singleton pattern. The class can only be instantiated in this class.
      */
     private ItemDB() throws GameException {
-        items = new ArrayList<Item>();
-        readItems();
+        items = new ArrayList<>();
     }
 
     /**
@@ -70,6 +69,11 @@ public class ItemDB {
 //				}
 //			}
 //		}
+        for (Item item : items) {
+            if (item.getItemID() == id) {
+                return item;
+            }
+        }
         throw new GameException("Item not found with ID: " + id);
     }
 
@@ -79,30 +83,34 @@ public class ItemDB {
      * Throws an exception if the text file is not found.
      */
     public void readItems() throws GameException {
-        Scanner in = null;
         try {
-            in = new Scanner(new File("items.txt"));
-        } catch (FileNotFoundException e) {
-            throw new GameException("File not found");
+            Scanner in;
+            try {
+                in = new Scanner(new File("items.txt"));
+            } catch (FileNotFoundException e) {
+                throw new GameException("File not found");
+            }
+
+            while (in.hasNext()) {
+
+                int id = Integer.parseInt(in.nextLine());
+                String name = in.nextLine();
+                String desc = in.nextLine();
+
+                Item item = new Item(id, name, desc);
+
+                // Add the room to the collection
+                items.add(item);
+
+                if (in.hasNextLine()) {
+                    in.nextLine();
+                }
+            }
+
+            in.close();
+        } catch (Exception e) {
+            throw new GameException(e.getMessage());
         }
-
-        while (in.hasNext()) {
-
-            int id = Integer.parseInt(in.nextLine());
-            String name = in.nextLine();
-            int roomId = Integer.parseInt(in.nextLine());
-            String desc = in.nextLine();
-
-            Item item = new Item();
-            item.setItemID(id);
-            item.setItemName(name);
-            item.setItemDescription(desc);
-
-
-            // Add the room to the collection
-            items.add(item);
-        }
-
-        in.close();
     }
 }
+

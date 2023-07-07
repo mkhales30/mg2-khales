@@ -1,7 +1,6 @@
 package controller;
 
 import gameExceptions.GameException;
-import model.ItemDB;
 import model.RoomDB;
 
 import java.util.ArrayList;
@@ -16,10 +15,7 @@ import java.util.ArrayList;
  */
 public class GameController {
 
-    public static final int FIRST_ROOM = 1;
-    private Commands commands;
-    private RoomDB rdb;
-    private ItemDB idb;
+    private final Commands commands;
 
 
     /**
@@ -28,7 +24,11 @@ public class GameController {
      * Instantiates the Commands object for the game
      */
     public GameController() {
-        commands = new Commands();
+        try {
+            commands = new Commands();
+        } catch (GameException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -39,10 +39,8 @@ public class GameController {
      * @throws GameException - if the first room is not found.
      */
     public String displayFirstRoom() throws GameException {
-        // FIX
-//		return commands.executeCommand("L");
-        Room firstRoom = new Room(0);
-        return firstRoom.getName();
+        //Looks by default
+        return executeCommand("L");
     }
 
     /**
@@ -56,7 +54,10 @@ public class GameController {
      * @throws GameException if the command is invalid
      */
     public String executeCommand(String cmd) throws GameException {
-        return commands.executeCommand(cmd);
+        if (cmd.equalsIgnoreCase("x")) {
+            return "  ";
+        }
+        return commands.executeCommand(cmd.toUpperCase());
     }
 
     /**
@@ -64,10 +65,9 @@ public class GameController {
      * Handles the print map command from Adventure
      * Builds a String representation of the current map
      *
-     * @return String - the String of the current map
      * @throws GameException if one of the files is not found or has an error
      */
-    public String printMap() throws GameException {
+    public void printMap() throws GameException {
         RoomDB rdb = RoomDB.getInstance();
         ArrayList<Room> rooms = rdb.getRoomArray();
         StringBuilder map = new StringBuilder("Room Info:\n");
@@ -75,7 +75,6 @@ public class GameController {
             map.append(room.getName()).append(" - ").append(room.getDescription()).append("\n");
         }
         map.append("----------\n");
-        return map.toString();
     }
 
 }

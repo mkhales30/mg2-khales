@@ -10,6 +10,12 @@ package controller;
  */
 public class Item {
 
+    public Item(int itemID, String itemName, String itemDescription) {
+        this.itemID = itemID;
+        this.itemName = itemName;
+        this.itemDescription = itemDescription;
+    }
+
     private int itemID;
     private String itemName;
     private String itemDescription;
@@ -44,9 +50,6 @@ public class Item {
      *
      * @return String - the String to display in the game
      */
-    public String display() {
-        return itemDescription;
-    }
 
     @Override
     public String toString() {

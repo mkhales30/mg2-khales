@@ -1,7 +1,10 @@
 package controller;
 
 import gameExceptions.GameException;
+import model.ItemDB;
+import model.RoomDB;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -20,18 +23,41 @@ class Commands {
     private static final List<Character> validDirections = Arrays.asList('W', 'N', 'S', 'E', 'U', 'D');
     private static final List<Character> itemCommands = Arrays.asList('I', 'R', 'G');
     public static final int exitCommand = 5;
-    private Player player;
+    private final Player player;
     private Room currentRoom;
+    private final RoomDB roomDB;
+
 
     /**
      * Method Commands
      * Constructor for the Commands class.
      * Instantiates a new player object for tracking inventory in the game.
      */
-    Commands() {
-        player = new Player(); // Instantiate a new Player object
-//        currentRoom = rooms.get(0);
+    Commands() throws GameException {
+        player = new Player();
+
+        try {
+            ItemDB itemDB = ItemDB.getInstance();
+            itemDB.readItems();
+
+            roomDB = RoomDB.getInstance();
+            roomDB.readRooms();
+
+            currentRoom = roomDB.getRoom(player.getCurRoom());
+        } catch (GameException e) {
+            throw new GameException(e.getMessage());
+        }
     }
+
+    private void updateCurrentRoom() throws GameException {
+
+        try {
+            currentRoom = roomDB.getRoom(player.getCurRoom());
+        } catch (GameException e) {
+            throw new GameException(e.getMessage());
+        }
+    }
+
 
     /**
      * Method validateCommand
@@ -48,7 +74,12 @@ class Commands {
      * @throws GameException
      */
     private int validateCommand(String cmdLine) throws GameException {
-        char cmd = Character.toUpperCase(cmdLine.charAt(0)); // Get the first character of the command
+        char cmd;
+        try {
+            cmd = Character.toUpperCase(cmdLine.charAt(0)); // Get the first character of the command
+        } catch (StringIndexOutOfBoundsException e) {
+            throw new GameException(e.getMessage());
+        }
 
         // Check if it is a movement command
         if (validDirections.contains(cmd)) {
@@ -71,7 +102,7 @@ class Commands {
             return exitCommand;
         }
 
-        throw new GameException("Invalid command."); // Throw an exception for an invalid command
+        throw new GameException(cmdLine + " is not a valid command.\nPlease try again."); // Throw an exception for an invalid command
     }
 
     /**
@@ -86,83 +117,50 @@ class Commands {
      */
     protected String executeCommand(String cmd) throws GameException {
         int commandType = validateCommand(cmd); // Validate the command
+        if (cmd.charAt(0) == 'U') cmd = "N";
+        if (cmd.charAt(0) == 'D') cmd = "S";
 
-        switch (commandType) {
-            case 1:
-                return "move(cmd)";
-            case 2:
-                return itemCommand(cmd);
-            case 3:
-                return look();
-            case 4:
-                return backpack();
-            case exitCommand:
-                return "Game over. Goodbye!";
-            default:
-                throw new GameException("Invalid command.");
-        }
+
+        return switch (commandType) {
+            case 1 -> move(cmd);
+            case 2 -> itemCommand(cmd);
+            case 3 -> look();
+            case 4 -> backpack();
+            case exitCommand -> "Game over. Goodbye!";
+            default -> throw new GameException("Invalid command.");
+        };
     }
 
-//	/**
-//	 * Method move
-//	 * Returns the String for the new Room the user is entering.
-//	 * Calls the Room validDirection method to ensure that the direction is valid for this room.
-//	 * If the direction is valid, updates the room to be visited by updating the room.
-//	 * Updates the current Room in Player.
-//	 * If the direction is not valid, throws an exception for an invalid direction.
-//	 *
-//	 * @param cmdRoom - String that contains the command entered by the user
-//	 * @return String - the new room the user is moving to
-//	 * @throws GameException
-//	 */
-//	private int move(String cmdRoom){
-//		int endRoom = 0;
-//		boolean moved = false;
-//		int north = currentRoom.getNorth();
-//		int east = currentRoom.getEast();
-//		int south = currentRoom.getSouth();
-//		int west = currentRoom.getWest();
-//		while (!moved) {
-//			System.out.println("----------");
-//			switch (cmdRoom) {
-//				case "N", "n", "North", "north" -> {
-//					if (north > 0) {
-//						endRoom = north - 1;
-//						moved = true;
-//					} else {
-//						System.out.println("There is no way north, try a different direction.");
-//					}
-//				}
-//				case "E", "e", "East", "east" -> {
-//					if (east > 0) {
-//						endRoom = east - 1;
-//						moved = true;
-//					} else {
-//						System.out.println("There is no way east, try a different direction.");
-//					}
-//				}
-//				case "S", "s", "South", "south" -> {
-//					if (south > 0) {
-//						endRoom = south - 1;
-//						moved = true;
-//					} else {
-//						System.out.println("There is no way south, try a different direction.");
-//					}
-//				}
-//				case "W", "w", "West", "west" -> {
-//					if (west > 0) {
-//						endRoom = west - 1;
-//						moved = true;
-//					} else {
-//						System.out.println("There is no way west, try a different direction.");
-//					}
-//				}
-//				default -> System.out.println("Please try one of the four cardinal directions or exit to quit.");
-//			}
-//			System.out.println("----------");
-//		}
-//		return "You are now in" get.r;
-//	}
+    /**
+     * Method move
+     * returns the String for the new Room the user is entering
+     * Calls Room validDirection to ensure that the direction is valid for this room.
+     * If the direction is valid,
+     * Updates the room to be visited by updating the room
+     * Updates the current Room in Player
+     * If the direction is not valid,
+     * throws an exception for an invalid direction
+     *
+     * @param cmdRoom - String that contains the command entered by the user
+     * @return String - the new room the user is moving to
+     * @throws GameException
+     */
+    private String move(String cmdRoom) throws GameException {
+
+        int validRoomIndex = currentRoom.validDirection(cmdRoom.charAt(0));
+
+        if (validRoomIndex != -1) {
+            int designatedRoomID = currentRoom.getExits().get(validRoomIndex).getDestination();
+            player.setCurRoom(designatedRoomID);
+            roomDB.getRoom(designatedRoomID);
+            updateCurrentRoom();
+
+            return "You have entered " + currentRoom.getName();
+        }
+
+
+        throw new GameException();
+    }
 
     /**
      * Method itemCommand
@@ -176,17 +174,15 @@ class Commands {
      */
     private String itemCommand(String cmd) throws GameException {
         char itemCmd = Character.toUpperCase(cmd.charAt(0)); // Get the item command character
+        String[] cmdLines = cmd.split(" ", 2);
+        String itemName = cmdLines[1]; //grabs Item name
 
-        switch (itemCmd) {
-            case 'G':
-                return get();
-            case 'R':
-                return remove();
-            case 'I':
-                return inspect();
-            default:
-                throw new GameException("Invalid command.");
-        }
+        return switch (itemCmd) {
+            case 'G' -> get(itemName);
+            case 'R' -> remove(itemName);
+            case 'I' -> inspect(itemName);
+            default -> throw new GameException("Invalid command.");
+        };
     }
 
 
@@ -200,21 +196,17 @@ class Commands {
      * @return String - the item has been added to the inventory
      * @throws GameException
      */
-    private String get() throws GameException {
-        int currentRoom = player.getCurRoom();
-//        Item item = currentRoom.getItem();
-//
-//        if (item == null) {
-//            throw new GameException("There is no item to pick up in this room.");
-//        }
-//
-//        // Remove the item from the room
-////        currentRoom.removeItem();
-//
-//        // Add the item to the player's inventory
-//        player.addItem(item);
+    private String get(String itemName) throws GameException {
+        ArrayList<Item> roomItems = currentRoom.getRoomItems();
+        for (Item item : roomItems) {
+            if (item.getItemName().equalsIgnoreCase(itemName)) {
+                player.addItem(item);
+                currentRoom.removeItem(item);
+                return item.getItemName() + " was added to your inventory";
+            }
+        }
 
-        return "You picked up " + "item.getItemName()" + ".";
+        throw new GameException("Failed to get " + itemName);
     }
 
     /**
@@ -227,20 +219,22 @@ class Commands {
      * @return String - the item has been dropped
      * @throws GameException
      */
-    private String remove() throws GameException {
-        Item item = player.getCurrentItem();
+    private String remove(String itemName) throws GameException {
 
-        if (item == null) {
+        if (player.getInventory() == null) {
             throw new GameException("You don't have any item to drop.");
         }
 
-        // Remove the item from the player's inventory
-        player.removeItem(item);
-
-        // Add the item to the current room
-//        player.getCurRoom().addItem(item);
-
-        return "You dropped " + item.getItemName() + ".";
+        for (Item item : player.getInventory()) {
+            if (item.getItemName().equalsIgnoreCase(itemName)) {
+                // Remove the item from the player's inventory
+                player.removeItem(item);
+                // Add the item to the current room
+                currentRoom.dropItem(item);
+                return "You removed " + item.getItemName() + " from your inventory";
+            }
+        }
+        throw new GameException("Failed to drop" + itemName);
     }
 
     /**
@@ -249,10 +243,37 @@ class Commands {
      *
      * @return String - the description of the current room
      */
-    private String look() {
-        int currentRoom = player.getCurRoom();
+    private String look() throws GameException {
 //        return currentRoom.getDescription();
-        return "Room description";
+        ArrayList<Item> roomItems = currentRoom.getRoomItems();
+        ArrayList<Exit> roomExits = currentRoom.getExits();
+        String roomVisited;
+
+        if (currentRoom.isVisited()) roomVisited = "You have been here before.\n";
+        else {
+            roomVisited = "This is your first time here.\n";
+        }
+        currentRoom.visitedRoom();
+
+        StringBuilder exitString = new StringBuilder("Available exits:");
+        for (Exit exit : roomExits) {
+            Room rm = new Room();
+            rm.retrieveByID(exit.getDestination());
+            exitString.append("\n").append("-").append(exit.getDirection());
+        }
+        StringBuilder itemString;
+        if (roomItems.isEmpty()) itemString = new StringBuilder("No items currently in this room\n");
+        else {
+            itemString = new StringBuilder("Items in the room:\n");
+            for (Item item : roomItems) {
+                itemString.append("-").append(item.getItemName()).append("\n");
+            }
+        }
+
+        return "You are in the " + currentRoom.getName() + "\n" +
+                currentRoom.getDescription() + roomVisited + "----------\n" +
+                itemString + "----------\n" +
+                exitString;
     }
 
     /**
@@ -262,21 +283,7 @@ class Commands {
      * @return String - the items in the backpack
      */
     private String backpack() {
-        List<Item> inventory = (List<Item>) player.getInventory();
-
-        if (inventory.isEmpty()) {
-            return "Your backpack is empty.";
-        } else {
-            StringBuilder sb = new StringBuilder();
-            sb.append("Items in your backpack: ");
-
-            for (Item item : inventory) {
-                sb.append(item.getItemName()).append(", ");
-            }
-
-            String result = sb.toString();
-            return result.substring(0, result.length() - 2); // Remove the trailing comma and space
-        }
+        return player.printInventory();
     }
 
     /**
@@ -285,16 +292,17 @@ class Commands {
      *
      * @return String - the description of the current item or a message if there is no item
      */
-    private String inspect() {
-        int currentRoom = player.getCurRoom();
-//        Item item = currentRoom.getItem();
+    private String inspect(String itemName) throws GameException {
+        ArrayList<Item> roomItems = currentRoom.getRoomItems();
 
-//        if (item == null) {
-//            return "There is no item to inspect in this room.";
-//        } else {
-//            return item.getItemDescription();
-//        }
-        return "Items in room: ";
+        if (roomItems == null) {
+            return "There is no item to inspect in this room.";
+        } else {
+            for (Item item : roomItems) {
+                if (itemName.equalsIgnoreCase(item.getItemName())) return item.getItemDescription();
+            }
+        }
+        return "Sorry " + itemName + " is not in this room";
     }
 }
 

@@ -1,7 +1,5 @@
 package gameExceptions;
 
-import java.io.IOException;
-
 /**
  * Class: GameException
  *
@@ -18,7 +16,7 @@ public class GameException extends Exception {
     }
 
     /**
-     * @param message
+     *
      */
     public GameException(String message) {
         super(message);

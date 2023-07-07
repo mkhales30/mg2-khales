@@ -10,7 +10,7 @@ import java.util.Scanner;
 /**
  * Class: Adventure
  *
- * @version 1.2
+ * @version 2.0
  * @Original Author: Dr. Rick Price, Khales Rahman
  * Course: ITEC 3860 Spring 2023
  * Written: February 18, 2023
@@ -19,7 +19,7 @@ import java.util.Scanner;
  * This class is the UI class for Mini Game 2. This class will control all
  * user aspects
  * of these games.
- * This version does not run yet and still needs multiple revisions
+ * Revised version and will run now
  */
 public class Adventure {
 
@@ -52,28 +52,38 @@ public class Adventure {
         System.out.println("Welcome to my adventure game. You will proceed through rooms based upon your entries.");
         System.out.println("You can navigate by using the entire direction or just the first letter.");
         System.out.println("You can view a room using the 'Look' command.");
-        System.out.println("To exit(X) the game, enter x\n");
-        String display = "";
+        System.out.println("To exit(X) the game, enter x");
+        System.out.println("----------");
+
+        String display;
         try {
-            display = "You are in " + gc.displayFirstRoom();
+            display = gc.displayFirstRoom();
             System.out.println(display);
+            System.out.println("----------");
         } catch (GameException e) {
             System.out.println(e.getMessage());
         }
-//        Game theGame = new Game();
-//        theGame.play();
 
-		String response = "";
-		do {
-			try {
-				String command = getCommand();
-				System.out.println(response = gc.executeCommand(command));
-		} catch(GameException ge) {
-			System.out.println(ge.getMessage() + "\n");
-			}
-		} while(!response.equalsIgnoreCase("Exit"));
+        String response = "";
+        System.out.print("Enter a command: ");
+        String command;
+        boolean firstGo = true;
+        do {
+            if (!firstGo) {
+                System.out.print("----------\n");
+                System.out.print("Enter another command: ");
+            }
+            firstGo = false;
+            command = getCommand();
+            try {
+                response = gc.executeCommand(command);
+                System.out.println(response);
+            } catch (GameException ge) {
+                System.out.println(ge.getMessage());
+            }
+        } while (!response.equalsIgnoreCase("  "));
 
-		System.out.println("Thank you for playing my game.");
+        System.out.println("Thank you for playing my game.");
     }
 
     /**
@@ -100,7 +110,7 @@ public class Adventure {
         Adventure ad = new Adventure();
         boolean fileFound = false;
         try {
-            System.out.println(ad.gc.printMap());
+            ad.gc.printMap();
             fileFound = true;
         } catch (GameException ge) {
             System.out.println(ge.getMessage());
@@ -112,8 +122,6 @@ public class Adventure {
             System.out.println("Could not load game :(");
         }
         ad.input.close();
-
-
     }
 
 }

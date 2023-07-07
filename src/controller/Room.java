@@ -5,7 +5,6 @@ import model.ItemDB;
 import model.RoomDB;
 
 import java.util.ArrayList;
-import java.util.Collection;
 
 /**
  * Class: Room
@@ -22,52 +21,16 @@ public class Room {
     private int roomID;
     private String name;
     private String description;
-    private ArrayList<Integer> items;
-    private boolean visited;
-    private Collection<Exit> exits;
+    private final ArrayList<Item> items;
+
+    private ArrayList<Exit> exits;
     private RoomDB rdb;
-    private ItemDB idb;
+
+    private boolean visited = false;
 
     public void visitedRoom() {
         this.visited = true;
     }
-
-    public int getNorth() {
-        return north;
-    }
-
-    public void setNorth(int north) {
-        this.north = north;
-    }
-
-    public int getWest() {
-        return west;
-    }
-
-    public void setWest(int west) {
-        this.west = west;
-    }
-
-    public int getSouth() {
-        return south;
-    }
-
-    public void setSouth(int south) {
-        this.south = south;
-    }
-
-    public int getEast() {
-        return east;
-    }
-
-    public void setEast(int east) {
-        this.east = east;
-    }
-
-    private int north;
-    private int west;
-    private int south;
-    private int east;
 
     public int getRoomID() {
         return roomID;
@@ -93,14 +56,6 @@ public class Room {
         this.description = description;
     }
 
-    public ArrayList<Integer> getItems() {
-        return items;
-    }
-
-    public void setItems(ArrayList<Integer> items) {
-        this.items = items;
-    }
-
     public boolean isVisited() {
         return visited;
     }
@@ -109,11 +64,11 @@ public class Room {
         this.visited = visited;
     }
 
-    public Collection<Exit> getExits() {
-        return exits;
+    public ArrayList<Exit> getExits() {
+        return this.exits;
     }
 
-    public void setExits(Collection<Exit> exits) {
+    public void setExits(ArrayList<Exit> exits) {
         this.exits = exits;
     }
 
@@ -124,7 +79,7 @@ public class Room {
      */
     public Room() throws GameException {
         rdb = RoomDB.getInstance();
-        idb = ItemDB.getInstance();
+        ItemDB.getInstance();
         exits = new ArrayList<>();
         items = new ArrayList<>();
     }
@@ -135,14 +90,25 @@ public class Room {
      *
      * @param id
      */
-    public Room(int id) throws GameException {
-        this();
-        Room temp = rdb.getRoom(id);
-        roomID = temp.getRoomID();
-        name = temp.getName();
-        description = temp.getDescription();
-        items = temp.getItems();
-        exits = temp.getExits();
+
+
+    /**
+     * Method Room
+     * Constructor for the Room class
+     * Initializes exits and items ArrayLists
+     */
+    public Room(int roomID, String name, String description, ArrayList<Exit> roomExits, ArrayList<Integer> itemsID) throws GameException {
+        this.roomID = roomID;
+        this.name = name;
+        this.description = description;
+
+        this.exits = roomExits;
+
+        items = new ArrayList<>();
+        buildItems(itemsID);
+
+
+        visited = false;
     }
 
     /**
@@ -154,39 +120,32 @@ public class Room {
      * @throws GameException if the Item String cannot be built
      */
     public String display() throws GameException {
-        StringBuilder sb = new StringBuilder();
-        sb.append(name).append("\n");
-        sb.append(buildDescription()).append("\n");
-        sb.append(buildItems()).append("\n");
-        sb.append(displayExits()).append("\n");
-        return sb.toString();
-    }
-
-    /**
-     * Method buildDescription
-     * Builds a String of the description
-     *
-     * @return String - the current room description text
-     */
-    private String buildDescription() {
-        return description;
+        return name + "- " + description + "\nItems in this room: " + items;
     }
 
     /**
      * Method buildItems
      * Builds a String of the items in the room
      *
-     * @return String - the current room items text
      * @throws GameException if the list of items cannot be built
      */
-    private String buildItems() throws GameException {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Items in the room:\n");
-        for (int itemId : items) {
-            Item item = idb.getItem(itemId);
-            sb.append("- ").append(item.getItemName()).append("\n");
+    private void buildItems(ArrayList<Integer> itemsID) throws GameException {
+        try {
+            ItemDB itemDB;
+
+            itemDB = ItemDB.getInstance();
+            itemDB.readItems();
+
+//            StringBuilder sb = new StringBuilder();
+//            sb.append("Items in the room:\n");
+
+            for (Integer itemID : itemsID) {
+                items.add(itemDB.getItem(itemID));
+//            sb.append("- ").append(item.getItemName()).append("\n");
+            }
+        } catch (GameException e) {
+            throw new GameException(e.getMessage());
         }
-        return sb.toString();
     }
 
     /**
@@ -195,9 +154,8 @@ public class Room {
      *
      * @param item - the Item to remove
      */
-    public void removeItem(Item item) throws GameException {
-        items.remove(Integer.valueOf(item.getItemID()));
-        updateRoom();
+    public void removeItem(Item item) {
+        items.remove(item);
     }
 
     /**
@@ -206,17 +164,8 @@ public class Room {
      *
      * @param item - the Item to add
      */
-    public void dropItem(Item item) throws GameException {
-        items.add(item.getItemID());
-        updateRoom();
-    }
-
-    /**
-     * Method updateRoom
-     * Calls RoomDB updateRoom(this) to save the current room in the map
-     */
-    public void updateRoom() throws GameException {
-        rdb.updateRoom(this);
+    public void dropItem(Item item) {
+        items.add(item);
     }
 
     /**
@@ -239,11 +188,10 @@ public class Room {
      * Retrieves the requested Room from RoomDB. Sets its values into the current Room and returns it
      *
      * @param roomNum ID of the room to retrieve
-     * @return Room - the requested Room
      * @throws GameException if the room cannot be found
      */
-    public Room retrieveByID(int roomNum) throws GameException {
-        return rdb.getRoom(roomNum);
+    public void retrieveByID(int roomNum) throws GameException {
+        rdb.getRoom(roomNum);
     }
 
     /**
@@ -256,28 +204,28 @@ public class Room {
      * @throws GameException if the direction chosen is not valid
      */
     public int validDirection(char cmd) throws GameException {
-        for (Exit exit : exits) {
-            if (exit.getDirection().equals(cmd)) {
-                return exit.getDestination();
+        for (int i = 0; i < exits.size(); i++) {
+            if (exits.get(i).getDirection().charAt(0) == cmd) {
+                return (i);
             }
         }
         throw new GameException("Invalid direction!");
     }
 
     /**
-     * Method getRoomItems
+     * Method: getRoomItems
+     * <p>
      * This method calls RoomDB to get the items that are in the current room.
      *
-     * @return ArrayList<Item> - the items in the room
+     * @return ArrayList Item - the items in the room
      * @throws GameException if the list of items cannot be built
      */
     public ArrayList<Item> getRoomItems() throws GameException {
-        ArrayList<Item> roomItems = new ArrayList<>();
-        for (int itemId : items) {
-            Item item = idb.getItem(itemId);
-            roomItems.add(item);
+        try {
+            return items;
+        } catch (Exception e) {
+            throw new GameException();
         }
-        return roomItems;
     }
 
     @Override
